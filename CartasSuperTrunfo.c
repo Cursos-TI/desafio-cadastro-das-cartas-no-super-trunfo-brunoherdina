@@ -7,12 +7,26 @@
 
 // Estrutura para armazenar os dados de uma carta
 typedef struct {
-    char codigo[4];        // Exemplo: A01, B02, etc
-    int populacao;         // População da cidade
-    float area;           // Área da cidade
-    float pib;            // PIB da cidade
-    int pontos_turisticos; // Número de pontos turísticos
+    char codigo[4];           // Exemplo: A01, B02, etc
+    char nome_cidade[100];    // Nome da cidade
+    int populacao;            // População da cidade
+    float area;              // Área da cidade em km²
+    float pib;               // PIB da cidade em bilhões
+    int pontos_turisticos;    // Número de pontos turísticos
+    float densidade_pop;      // Densidade populacional (hab/km²)
+    float pib_per_capita;     // PIB per capita em reais
 } Carta;
+
+// Função para calcular a densidade populacional
+float calcular_densidade(int populacao, float area) {
+    return populacao / area;
+}
+
+// Função para calcular o PIB per capita (PIB em bilhões convertido para reais)
+float calcular_pib_per_capita(float pib, int populacao) {
+    // Convertendo PIB de bilhões para reais (multiplicando por 1.000.000.000)
+    return (pib * 1000000000.0) / populacao;
+}
 
 // Função para cadastrar uma carta
 Carta cadastrar_carta() {
@@ -29,6 +43,15 @@ Carta cadastrar_carta() {
     // Formata o código da carta (exemplo: A01)
     sprintf(carta.codigo, "%c%02d", estado, numero);
     
+    // Limpa o buffer do teclado
+    getchar();
+    
+    // Leitura do nome da cidade
+    printf("Digite o nome da cidade: ");
+    fgets(carta.nome_cidade, 100, stdin);
+    // Remove o \n do final da string
+    carta.nome_cidade[strcspn(carta.nome_cidade, "\n")] = 0;
+    
     // Leitura dos atributos da carta
     printf("Digite a população da cidade: ");
     scanf("%d", &carta.populacao);
@@ -36,11 +59,15 @@ Carta cadastrar_carta() {
     printf("Digite a área da cidade (em km²): ");
     scanf("%f", &carta.area);
     
-    printf("Digite o PIB da cidade: ");
+    printf("Digite o PIB da cidade (em bilhões): ");
     scanf("%f", &carta.pib);
     
     printf("Digite o número de pontos turísticos: ");
     scanf("%d", &carta.pontos_turisticos);
+    
+    // Calcula a densidade populacional e o PIB per capita
+    carta.densidade_pop = calcular_densidade(carta.populacao, carta.area);
+    carta.pib_per_capita = calcular_pib_per_capita(carta.pib, carta.populacao);
     
     return carta;
 }
@@ -48,10 +75,13 @@ Carta cadastrar_carta() {
 // Função para exibir os dados de uma carta
 void exibir_carta(Carta carta) {
     printf("\n=== Dados da Carta %s ===\n", carta.codigo);
+    printf("Nome da Cidade: %s\n", carta.nome_cidade);
     printf("População: %d habitantes\n", carta.populacao);
     printf("Área: %.2f km²\n", carta.area);
-    printf("PIB: R$ %.2f\n", carta.pib);
+    printf("PIB: %.2f bilhões de reais\n", carta.pib);
     printf("Pontos Turísticos: %d\n", carta.pontos_turisticos);
+    printf("Densidade Populacional: %.2f hab/km²\n", carta.densidade_pop);
+    printf("PIB per Capita: %.2f reais\n", carta.pib_per_capita);
     printf("==========================\n\n");
 }
 
